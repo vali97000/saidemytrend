@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.kohsuke.github.GHRepositorySearchBuilder;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
@@ -23,6 +26,8 @@ import twitter4j.conf.ConfigurationBuilder;
 
 @RestController
 public class RepositoryDetailsController {
+
+    private static final Logger log = LoggerFactory.getLogger(RepositoryDetailsController.class);
 
     @Autowired
     private Environment env;
@@ -53,7 +58,7 @@ public class RepositoryDetailsController {
         Map<String, String> trendDetails = new HashMap<String, String>();
         try {
             Trends trends = twitter.getPlaceTrends(Integer.parseInt(trendPlace));
-            log.info("After API call");
+            log.debug("After API call");
             int count = 0;
             for (Trend trend : trends.getTrends()) {
                 if (count < Integer.parseInt(trendCount)) {
@@ -63,10 +68,10 @@ public class RepositoryDetailsController {
             }
         } catch (TwitterException e) {
             trendDetails.put("test", "MyTweet");
-            log.info("Twitter exception " + e.getMessage());
+            log.error("Twitter exception " + e.getMessage());
         } catch (Exception e) {
             trendDetails.put("test", "MyTweet");
-            log.info("Exception " + e.getMessage());
+            log.error("Exception " + e.getMessage());
         }
         return trendDetails;
     }
