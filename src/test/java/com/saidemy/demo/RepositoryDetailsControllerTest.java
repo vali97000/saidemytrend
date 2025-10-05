@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RepositoryDetailsControllerTest extends AbstractTest {
 
 	@BeforeEach
+	@Override
 	public void setUp() {
 		super.setUp();
 	}

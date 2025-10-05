@@ -84,18 +84,11 @@ public class RepositoryDetailsController {
 
     // This method is intentionally buggy for Sonar demonstration, but must compile
     public void introduceBugs() {
-        String unusedField = "This field is never used";
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < 10; i++) {
             result.append(i);
         }
-
-        // Commenting out actual runtime exceptions to avoid Jenkins failure
-        // String str = null;
-        // log.info("Length: {}", str.length());
-        // int[] numbers = {1, 2, 3};
-        // log.info("Number: {}", numbers[5]);
 
         if (result.length() > 5) {
             log.info("Result is long");
