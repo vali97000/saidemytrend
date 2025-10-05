@@ -1,4 +1,4 @@
-package com.saidemy.demo.controller;
+package com.stalin.demo.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,18 +21,16 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RestController
 public class RepositoryDetailsController {
-    private static final Logger log = LoggerFactory.getLogger(RepositoryDetailsController.class);
 
     @Autowired
     private Environment env;
 
     @RequestMapping("/")
     public String getRepos() throws IOException {
+        GitHub github = new GitHubBuilder().withPassword("onelinesaidemy@gmail.com", "XXXXXXXX").build();
+        GHRepositorySearchBuilder builder = github.searchRepositories();
         return "Greetings from Saidemy!!";
     }
 
@@ -42,7 +40,7 @@ public class RepositoryDetailsController {
         String consumerSecret = env.getProperty("CONSUMER_SECRET");
         String accessToken = env.getProperty("ACCESS_TOKEN");
         String accessTokenSecret = env.getProperty("ACCESS_TOKEN_SECRET");
-        log.info("consumerKey " + consumerKey + " consumerSecret " + consumerSecret + " accessToken " + accessToken + " accessTokenSecret " + accessTokenSecret);		
+        System.out.println("consumerKey " + consumerKey + " consumerSecret " + consumerSecret + " accessToken " + accessToken + " accessTokenSecret " + accessTokenSecret);		
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
             .setOAuthConsumerKey(consumerKey)
@@ -50,14 +48,14 @@ public class RepositoryDetailsController {
             .setOAuthAccessToken(accessToken)
             .setOAuthAccessTokenSecret(accessTokenSecret);
         TwitterFactory tf = new TwitterFactory(cb.build());
-        log.info("Twitter Factory " + tf);
-        log.info("Code testing purpose ");
+        System.out.println("Twitter Factory " + tf);
+        System.out.println("Code testing purpose ");
         Twitter twitter = tf.getInstance();
-        log.info("Twitter object " + twitter);
+        System.out.println("Twitter object " + twitter);
         Map<String, String> trendDetails = new HashMap<String, String>();
         try {
             Trends trends = twitter.getPlaceTrends(Integer.parseInt(trendPlace));
-            log.info("After API call");
+            System.out.println("After API call");
             int count = 0;
             for (Trend trend : trends.getTrends()) {
                 if (count < Integer.parseInt(trendCount)) {
@@ -67,10 +65,10 @@ public class RepositoryDetailsController {
             }
         } catch (TwitterException e) {
             trendDetails.put("test", "MyTweet");
-            log.info("Twitter exception " + e.getMessage());
+            System.out.println("Twitter exception " + e.getMessage());
         } catch (Exception e) {
             trendDetails.put("test", "MyTweet");
-            log.info("Exception " + e.getMessage());
+            System.out.println("Exception " + e.getMessage());
         }
         return trendDetails;
     }
@@ -87,24 +85,24 @@ public class RepositoryDetailsController {
 
         // Bug: Null pointer exception
         String str = null;
-        log.info(str.length()); // This will throw NullPointerException
+        System.out.println(str.length()); // This will throw NullPointerException
 
         // Code smell: Long method
         if (result.length() > 5) {
-            log.info("Result is long");
+            System.out.println("Result is long");
         } else if (result.length() > 2) {
-            log.info("Result is medium");
+            System.out.println("Result is medium");
         } else {
-            log.info("Result is short");
+            System.out.println("Result is short");
         }
 
         // Bug: Array index out of bounds
         int[] numbers = {1, 2, 3};
-        log.info(numbers[5]); // This will throw ArrayIndexOutOfBoundsException
+        System.out.println(numbers[5]); // This will throw ArrayIndexOutOfBoundsException
 
         // Bug: Infinite loop
         while (true) {
-            log.info("This will run forever..."); // Infinite loop
+            System.out.println("This will run forever..."); // Infinite loop
         }
     }
 }
