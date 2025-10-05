@@ -1,4 +1,4 @@
-// Define the URL of the Artifactory registry okay
+// Define the URL of the Artifactory registry
 def registry = 'https://trial2hancl.jfrog.io/'
 
 pipeline {
