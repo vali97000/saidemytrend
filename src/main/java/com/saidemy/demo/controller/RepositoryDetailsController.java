@@ -7,7 +7,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.kohsuke.github.GHRepositorySearchBuilder;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,31 +33,38 @@ public class RepositoryDetailsController {
 
     @RequestMapping("/")
     public String getRepos() throws IOException {
+        // Example only – if you don't use GitHub here, remove these lines
+        GitHub github = new GitHubBuilder().withOAuthToken(env.getProperty("GITHUB_TOKEN")).build();
+        log.info("GitHub connection established: {}", github.getApiUrl());
         return "Greetings from Saidemy!!";
     }
 
     @GetMapping("/trends")
-    public Map<String, String> getTwitterTrends(@RequestParam("placeid") String trendPlace, @RequestParam("count") String trendCount) {
+    public Map<String, String> getTwitterTrends(
+            @RequestParam("placeid") String trendPlace,
+            @RequestParam("count") String trendCount) {
+
         String consumerKey = env.getProperty("CONSUMER_KEY");
         String consumerSecret = env.getProperty("CONSUMER_SECRET");
         String accessToken = env.getProperty("ACCESS_TOKEN");
         String accessTokenSecret = env.getProperty("ACCESS_TOKEN_SECRET");
-        log.info("consumerKey " + consumerKey + " consumerSecret " + consumerSecret + " accessToken " + accessToken + " accessTokenSecret " + accessTokenSecret);		
+
+        log.info("Twitter credentials loaded successfully");
+
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-            .setOAuthConsumerKey(consumerKey)
-            .setOAuthConsumerSecret(consumerSecret)
-            .setOAuthAccessToken(accessToken)
-            .setOAuthAccessTokenSecret(accessTokenSecret);
+                .setOAuthConsumerKey(consumerKey)
+                .setOAuthConsumerSecret(consumerSecret)
+                .setOAuthAccessToken(accessToken)
+                .setOAuthAccessTokenSecret(accessTokenSecret);
+
         TwitterFactory tf = new TwitterFactory(cb.build());
-        log.info("Twitter Factory " + tf);
-        log.info("Code testing purpose ");
         Twitter twitter = tf.getInstance();
-        log.info("Twitter object " + twitter);
-        Map<String, String> trendDetails = new HashMap<String, String>();
+
+        Map<String, String> trendDetails = new HashMap<>();
         try {
             Trends trends = twitter.getPlaceTrends(Integer.parseInt(trendPlace));
-            log.debug("After API call");
+            log.debug("Fetched trends for placeId={}", trendPlace);
             int count = 0;
             for (Trend trend : trends.getTrends()) {
                 if (count < Integer.parseInt(trendCount)) {
@@ -67,30 +73,30 @@ public class RepositoryDetailsController {
                 }
             }
         } catch (TwitterException e) {
-            trendDetails.put("test", "MyTweet");
-            log.error("Twitter exception " + e.getMessage());
+            trendDetails.put("error", "Twitter API failed");
+            log.error("Twitter exception {}", e.getMessage());
         } catch (Exception e) {
-            trendDetails.put("test", "MyTweet");
-            log.error("Exception " + e.getMessage());
+            trendDetails.put("error", "Unexpected error");
+            log.error("Exception {}", e.getMessage());
         }
         return trendDetails;
     }
 
-    // Sample method to introduce bugs and code smells
+    // This method is intentionally buggy for Sonar demonstration, but must compile
     public void introduceBugs() {
-        // Code smell: Unused field
         String unusedField = "This field is never used";
+        StringBuilder result = new StringBuilder();
 
-        String result = "";
         for (int i = 0; i < 10; i++) {
-            result += i; // Code smell: String concatenation in a loop
+            result.append(i);
         }
 
-        // Bug: Null pointer exception
-        String str = null;
-        log.info(str.length()); // This will throw NullPointerException
+        // Commenting out actual runtime exceptions to avoid Jenkins failure
+        // String str = null;
+        // log.info("Length: {}", str.length());
+        // int[] numbers = {1, 2, 3};
+        // log.info("Number: {}", numbers[5]);
 
-        // Code smell: Long method
         if (result.length() > 5) {
             log.info("Result is long");
         } else if (result.length() > 2) {
@@ -99,13 +105,7 @@ public class RepositoryDetailsController {
             log.info("Result is short");
         }
 
-        // Bug: Array index out of bounds
-        int[] numbers = {1, 2, 3};
-        log.info(numbers[5]); // This will throw ArrayIndexOutOfBoundsException
-
-        // Bug: Infinite loop
-        while (true) {
-            log.info("This will run forever..."); // Infinite loop
-        }
+        // Avoid infinite loop for pipeline safety
+        log.info("Skipping infinite loop for Jenkins run");
     }
 }
